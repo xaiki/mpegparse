@@ -28,8 +28,12 @@
 #include <endian.h>
 #include "mpegparse.h"
 
+#ifndef MIN
 #define MIN(X,Y) ((X)<(Y))?(X):(Y)
+#endif
+#ifndef
 #define MAX(X,Y) ((X)>(Y))?(X):(Y)
+#endif
 
 const char _PM_EMBEDDED[]   = "Embeded Parseme";
 const char _PM_EMBEDDED_A[] = "Embeded Parseme Array";
