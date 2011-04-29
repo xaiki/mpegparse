@@ -93,7 +93,7 @@ int pm_get_key(parseme_t p[], char *key, pm_data_type *value) {
 	return 0;
 }
 
-int parse (char *b, size_t bufsiz, parseme_t p[], char **endptr) {
+int pm_parse (char *b, size_t bufsiz, parseme_t p[], char **endptr) {
 	int i;
 	uint8_t offset = 0;
 	char *buf = b;

@@ -87,5 +87,5 @@ parseme_t *_mpegparse_new (parseme_t *p, size_t nmemb);
 #define mpegparse_new(p) _mpegparse_new(p, ARRAY_SIZE(p))
 int _check_zero (parseme_t p[], int i, char *buf, size_t buflen);
 int _check_range (parseme_t p[], int i, char *buf, size_t buflen);
-int parse (char *b, size_t bufsiz, parseme_t p[], char **endptr);
+int pm_parse (char *b, size_t bufsiz, parseme_t p[], char **endptr);
 #endif /* __MPEGPARSE_H__ */
