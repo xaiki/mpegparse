@@ -116,27 +116,41 @@ int pm_parse (char *b, size_t bufsiz, parseme_t p[], char **endptr) {
 
 	/* XXX(xaiki): hack */
 	for ( i = 0; p[i].name; i++ ) {
-		dprintf("p[%d](%s).size = %d.\n", i, p[i].name, p[i].size/8);
-		tot += p[i].size/8;	/* XXX(xaiki): hack */
+		dprintf("IN %s[%d](%s).size = %d.\n", name, i, p[i].name, p[i].size/8);
+		if (p[i].name != _PM_EMBEDDED)
+			tot += p[i].size/8;	/* XXX(xaiki): hack */
 		p[i].data = 0;
 	}
 
 	/* XXX(xaiki): hack */
 	if (bufsiz < tot) {
 		dprintf("invalid bufsiz = %u, need at least %u .\n", bufsiz, tot);
-		return 0; /* we don't know how much we'll need to parse this */
+		return -tot; /* we don't know how much we'll need to parse this, but at least tot */
 	}
 
 	for ( i = 0; p[i].name; i++) {
-		dprintf("trying on %s (%u), %u left\n", p[i].name, size?size:p[i].size, bufsiz - (buf - b));
-		if ((p[i].name == _PM_EMBEDDED) && (p[i].check)) {
-			p[i].size = parse (buf, bufsiz - (buf - b), _PM_EMBEDDED_GETPM(p[i]), NULL);
-			if (p[i].size <= 0) {
-				dprintf("FAILED, UNHANDLED\n"); /* XXX(xaiki): handle */
-				p[i].size = 0;
+		dprintf("%s[%d] trying on %s (%u), offset %u, left %u: %x\n",
+			name, i,  p[i].name, size?size:p[i].size, (buf - b), bufsiz - (buf - b), buf[0]);
+		if ((p[i].name == _PM_EMBEDDED) && p[i].check) {
+			if (p[i].size && p[i].def == 1) {
+				dprintf ("Already parsed, skipping\n");
+				continue;
+			}
+			int ret = pm_parse (buf, bufsiz - (buf - b), _PM_EMBEDDED_GETPM(p[i]), NULL);
+			dprintf("Returned: %d\n", ret);
+			if (ret <= 0) {
+				int j; /* reset pm_embedded */
+				for (j = 0; p[j].name; j++) {
+					if (p[j].name == _PM_EMBEDDED && p[j].check) {
+						if (p[j].size && p[j].def == 1) {
+							p[j].size = 0;
+						}
+					}
+				}
+				return ret + (buf - b);
 			} else {
-				//	buf += p[i].size;
-				p[i].size = 0;
+				buf += ret;
+				p[i].size = ret*8;
 				//if (p[i+1].name)
 				//p[i+1].size -= p[i].size; /* humm, well, ok, why not ... */
 			}
@@ -175,7 +189,7 @@ int pm_parse (char *b, size_t bufsiz, parseme_t p[], char **endptr) {
 						dprintf ("%s'%s:%u'->'%u'",  p[j].def?"*":p[j].check?"=":" ", p[j].name, p[j].size, p[j].data);
 				dprintf("\n");
 #endif
-				return -tot;
+				return b - buf -tot;
 			}
 			buf += tot;
 			continue;
