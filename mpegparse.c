@@ -93,6 +93,73 @@ int pm_get_key(parseme_t p[], char *key, pm_data_type *value) {
 	return 0;
 }
 
+int pm_parse_describe (parseme_t *p) {
+	int i;
+
+	for (i = 0; p[i].name; i++) {
+		if (p[i].name == _PM_EMBEDDED) {
+			parseme_t *e = _PM_EMBEDDED_GETPM(p[i]);
+			if (e) {
+				printf ("[%s]\n", pm_get_name(e));
+				pm_parse_describe (e);
+			} else {
+				printf("[%d]%s'%s:%u' \t-> 'Stalling Embed' \n",
+				       i, p[i].def?"*":p[i].check?"=":" ", p[i].name, p[i].size);
+			}
+		} else {
+			if (p[i].size) {
+				printf ("[%d]%s'%s:%u' \t-> '%d' \n",
+					i, p[i].def?"*":p[i].check?"=":" ", p[i].name, p[i].size, p[i].data);
+			}
+		}
+	}
+
+}
+
+int pm_file_describe_last (parsefile_t *f) {
+	struct parseblock *b = f->b;
+	struct parseme *p = b[f->last].p;
+
+	printf ("0x%08x [ %s [#%d]]\n", f->pos, pm_get_name(p), b[f->last].seen);
+	return pm_parse_describe (p);
+}
+
+int pm_parse_file (char *buf, size_t size, parsefile_t *f, char **endptr) {
+	int ret = 0;
+	int adv;
+	int seen = 0;
+	int i;
+
+	struct parseblock *b = f->b;
+
+	for (i=0; b[i].p; i++) {
+		if (b[i].flags & PB_COMPLETE)
+			continue;
+		dprintf ("parsing at offset %d, starts %s\n", ret, buf + ret);
+		adv = pm_parse (buf + ret, size - ret, b[i].p, endptr);
+		dprintf ("got: %d\n", adv);
+		if (adv == 0)
+			if (b[i].flags & PB_OPTIONAL)
+				continue;
+		if (adv <= 0) {
+			return adv;
+		}
+		seen++;
+		b[i].seen ++;
+		f->pos += adv;
+		ret += adv;
+		if (b[i].flags & PB_UNIQUE) {
+			b[i].flags |= PB_COMPLETE;
+			if (b[i].seen > 1)
+				printf ("Warning, we got 2 %s when it's supposed to be unique", pm_get_name (b[i].p));
+		}
+		break;
+	}
+			dprintf("Returned: %d\n", p[i].size);
+	f->last = i;
+	return ret;
+}
+
 int pm_parse (char *b, size_t bufsiz, parseme_t p[], char **endptr) {
 	int i;
 	uint8_t offset = 0;
@@ -244,9 +311,8 @@ int pm_parse (char *b, size_t bufsiz, parseme_t p[], char **endptr) {
 
 	dprintf ("parsing succeded !\n");
 #ifdef DEBUG
-	for ( i = 0; p[i].name; i++)
-		if (p[i].size <= sizeof(pm_data_type)*8)
-			dprintf ("%s'%s:%u' \t-> '%x' \n",  p[i].def?"*":p[i].check?"=":" ", p[i].name, p[i].size, p[i].data);
+	printf ("[%s]\n", name);
+	pm_parse_describe (p);
 #endif
 
 	if (endptr)

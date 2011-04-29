@@ -156,4 +156,19 @@ struct parseme flv_tag[] =
 		{NULL}
 	};
 
+enum {
+	FLV_F_HEADER = 0,
+	FLV_F_TAG,
+};
+
+struct parsefile flv_file =
+{
+    .name = "FLV File",
+    .b = {
+        {flv_header, PB_UNIQUE},
+        {flv_tag, PB_OPTIONAL},
+        NULL
+    }
+};
+
 #endif /* __XA1_FLV_H__ */

@@ -79,6 +79,28 @@ struct parseme {
 	 (p)[0].check == NULL)?			\
 	 (p)[0].name:"Unknown"
 
+
+enum parseblock_flags_t {
+	PB_COMPLETE = 1,
+	PB_OPTIONAL = 1<<1,
+	PB_UNIQUE   = 1<<2,
+};
+
+struct parseblock {
+	struct parseme *p;
+	enum parseblock_flags_t	flags;
+	int seen;
+};
+
+typedef struct parsefile parsefile_t;
+struct parsefile {
+	char *name;
+	size_t pos;
+	size_t size;
+	int last;
+	struct parseblock b[];
+};
+
 #define ARRAY_SIZE(p) (sizeof(p)/sizeof(p[0]))
 
 int pm_get_key(parseme_t p[], char *key, pm_data_type *value);
