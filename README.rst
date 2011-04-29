@@ -10,7 +10,7 @@ This library is currently highly experimental.
 License
 =======
 
-mpegparse is released under the `GNU LGPL 2.1 <http://www.gnu.org/licenses/lgpl-2.1.html>`_ or later.
+mpegparse is released under the `GNU GPL 2.1 <http://www.gnu.org/licenses/gpl-2.0.html>`_ or later.
 
 
 Authors
@@ -18,4 +18,4 @@ Authors
 
 mpegparse was created at SmartJog by Niv Sardi.
 
-* Niv Sardi <niv.sardi@smartjog.com>
+* Niv Sardi <xaiki@debian.org>
