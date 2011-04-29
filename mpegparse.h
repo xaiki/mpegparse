@@ -67,7 +67,7 @@ typedef struct parseme parseme_t;
 
 struct parseme {
 	const char	*name;
-	size_t		size;
+	ssize_t		size;
 	pm_data_type	def;
 	int		(*check) (struct parseme *p, int field, char *buf, size_t buflen);
 	pm_data_type 	data;
