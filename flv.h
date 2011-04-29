@@ -103,7 +103,13 @@ struct parseme flv_vinfo[] =
 		{NULL}
 	};
 
-int check_type (struct parseme p[], int field, char *buf) {
+enum {
+	FLV_T_TYPE_AUDIO = 8,
+	FLV_T_TYPE_VIDEO = 9,
+	FLV_T_TYPE_METADATA = 18,
+};
+
+int check_type (struct parseme p[], int field, char *buf, size_t buflen) {
 	char v = *buf;
 	switch (v) {
 	case 8:
@@ -126,7 +132,7 @@ int check_type (struct parseme p[], int field, char *buf) {
 	return 1;
 }
 
-int update_data_size (struct parseme p[], int field, char *buf) {
+int update_data_size (struct parseme p[], int field, char *buf, size_t buflen) {
 	dprintf("setting %s to %u from %s.\n", p[FLV_T_DATA].name, p[field].data, p[field].name);
 
 	p[FLV_T_DATA].size = p[field].data*8;
