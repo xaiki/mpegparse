@@ -103,8 +103,15 @@ int parse (char *b, size_t bufsiz, parseme_t p[], char **endptr) {
 
 	size_t align =  sizeof(buf[0])*8;
 
+	const char *name = "p";
+
 	if (endptr)
 		*endptr = b;
+
+	if (p[0].size == 0 && p[0].def == 0 && p[0].check == NULL) {
+		name = p[0].name;
+		p++;
+	}
 
 	/* XXX(xaiki): hack */
 	for ( i = 0; p[i].name; i++ ) {

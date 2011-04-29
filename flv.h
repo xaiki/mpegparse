@@ -46,6 +46,7 @@ enum {
 
 struct parseme flv_header[] =
 	{
+		{"FLV Header"},
 		{"Signature", 24, UINT24STR('F', 'L', 'V')},
 		{"Version", 8, 0x01},
 		{"TypeFlagsReserved0", 5, 0, _check_zero},
@@ -71,12 +72,14 @@ enum {
 
 struct parseme flv_minfo[] =
 	{
+		{"FLV Metadata Info"},
 		{"Not Implemented", 0, 0, 0},
 		{NULL}
 	};
 
 struct parseme flv_ainfo[] =
 	{
+		{"FLV Audio Info"},
 		{"ACodec", 4, PM_RANGE(0,15)},
 		{"SamplingRate", 2, PM_RANGE(0,3)},
 		{"Is16bits", 1, 0},
@@ -94,6 +97,7 @@ enum {
 
 struct parseme flv_vinfo[] =
 	{
+		{"FLV Video Info"},
 		{"FrameType", 4, PM_RANGE(1,5)},
 		{"VCodec", 4, PM_RANGE(1,7)},
 		{NULL}
@@ -131,6 +135,7 @@ int update_data_size (struct parseme p[], int field, char *buf) {
 
 struct parseme flv_tag[] =
 	{
+		{"FLV Tag"},
 		{"PreviousTagSize", 32, 0},
 		{"Type", 8, 0, check_type},
 		{"DataSize", 24, 0, update_data_size},
