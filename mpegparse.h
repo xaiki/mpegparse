@@ -73,6 +73,12 @@ struct parseme {
 	pm_data_type 	data;
 };
 
+#define pm_get_name(p)				\
+	((p)[0].size  == 0 &&			\
+	 (p)[0].def   == 0 &&			\
+	 (p)[0].check == NULL)?			\
+	 (p)[0].name:"Unknown"
+
 #define ARRAY_SIZE(p) (sizeof(p)/sizeof(p[0]))
 
 int pm_get_key(parseme_t p[], char *key, pm_data_type *value);
