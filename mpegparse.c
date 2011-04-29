@@ -212,32 +212,33 @@ int pm_parse (char *b, size_t bufsiz, parseme_t p[], char **endptr) {
 			size -= (align - (offset + pad));
 			offset = 0;
 			i--;
-		} else {
-			if (p[i].check) {
-				int t = p[i].size;
-				if (! p[i].check(p, i, buf, bufsiz - (buf - b))) {
-					printf ("at 0x%08x, offset %ld:%d, Field '%s':'%d' couldn't be checked by '%p'.\n",
-						(unsigned int) (buf - b)*4, buf - b, offset, p[i].name, p[i].data, p[i].check);
-					goto err;
-				}
-				if (t != p[i].size) /* updated, retry */
-					goto retry;
-			} else if (p[i].def && p[i].data != p[i].def) {
-				printf ("at 0x%08x, offset %ld:%d, Field '%s' should be '%02x' but is '%02x'.\n",
-					(unsigned int) (buf - b)*4, buf - b, offset, p[i].name, p[i].def, p[i].data);
-
+			if (!offset) buf++;
+			continue;
+		}
+		if (p[i].check) {
+			int t = p[i].size;
+			if (! p[i].check(p, i, buf, bufsiz - (buf - b))) {
+				printf ("at 0x%08x, offset %ld:%d, Field '%s':'%d' couldn't be checked by '%p'.\n",
+					(unsigned int) (buf - b)*4, buf - b, offset, p[i].name, p[i].data, p[i].check);
 				goto err;
 			}
+			if (t != p[i].size) /* updated, retry */
+				goto retry;
+		} else if (p[i].def && p[i].data != p[i].def) {
+			printf ("at 0x%08x, offset %ld:%d, Field '%s' should be '%02x' but is '%02x'.\n",
+				(unsigned int) (buf - b)*4, buf - b, offset, p[i].name, p[i].def, p[i].data);
 
-			size -= (align - (offset + pad));
-			offset = pad?align-pad:0;
-			/* HACK */
-			if (p[i+1].data != 0) {
-				dprintf("WARNING !!!!! DATA NOT 0 !!!!\n");
-				p[i+1].data = 0;
-			}
+			goto err;
 		}
 
+		size -= (align - (offset + pad));
+		offset = pad?align-pad:0;
+		/* HACK */
+		if (p[i+1].data != 0) {
+			dprintf("WARNING !!!!! DATA NOT 0 !!!!\n");
+			p[i+1].data = 0;
+		}
+		dprintf("Successfully parsed %s = %d\n", p[i].name, p[i].data);
 		if (!offset) buf++;
 	}
 
