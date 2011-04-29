@@ -149,7 +149,7 @@ int check_ebml_update_size (struct parseme p[], int field, char *buf, size_t buf
 	if (p[EBML_SIZE].data < 7)
 		p[EBML_SIZE].data = 7;
 
-	p[EBML_DATA].size = p[EBML_SIZE].data + 1;
+	p[EBML_DATA].size = p[EBML_SIZE].data;
 
 	printf("setting data size to %d\n", p[EBML_SIZE].data);
 	printf("so far\n");
@@ -179,21 +179,31 @@ int check_ebml_size (struct parseme p[], int field, char *buf, size_t buflen) {
 	return 1;
 }
 
+int reset_ebml (struct parseme p[], int field, char *buf, size_t buflen) {
+	p[EBML_ID].check = check_ebml_id;
+	p[EBML_SIZE].check = check_ebml_size;
+
+	return 1;
+}
 
 struct parseme ebml[] =
 	{
+		{"EBML"},
 		{"ID", 8, 0, check_ebml_id},
 		{"Size", 8, 0, check_ebml_size},
-		{"Data", 32},
+		{_PM_EMBEDDED, 32, 0, _PM_EMBEDDED_T(ebml)},
+		{"Reset", 0, 0, reset_ebml},
 		{NULL}
 	};
 
+struct parsefile ebml_file =
+	{
+		.name = "EBML File",
+		.b = {
+			{ebml, 0},
+			NULL
+		}
+	};
+
 #endif /* __XA1_EBML_H__ */
-
-
-
-
-
-
-
 
