@@ -31,7 +31,7 @@
 #define MIN(X,Y) ((X)<(Y))?(X):(Y)
 #define MAX(X,Y) ((X)>(Y))?(X):(Y)
 
-const char _PM_EMBEDDED[] = "Embeded Parseme";
+const char _PM_EMBEDDED[]   = "Embeded Parseme";
 const char _PM_EMBEDDED_A[] = "Embeded Parseme Array";
 
 int _check_zero (parseme_t p[], int i, char *buf, size_t buflen) {
@@ -63,6 +63,7 @@ void mpegparse_destroy(parseme_t *p) {
 }
 
 parseme_t *_mpegparse_new (parseme_t *p, size_t nmemb) {
+	dprintf("new: %p, %d\n", p, nmemb);
 	parseme_t *ret = calloc (nmemb, sizeof(*ret));
 	if (!ret)
 		return NULL;
