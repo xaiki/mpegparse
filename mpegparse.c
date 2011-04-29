@@ -221,7 +221,7 @@ int pm_parse (char *b, size_t bufsiz, parseme_t p[], char **endptr) {
 				//if (p[i+1].name)
 				//p[i+1].size -= p[i].size; /* humm, well, ok, why not ... */
 			}
-			dprintf("Returned: %d\n", p[i].size);
+
 			continue;
 		}
 
@@ -309,7 +309,8 @@ int pm_parse (char *b, size_t bufsiz, parseme_t p[], char **endptr) {
 		if (!offset) buf++;
 	}
 
-	dprintf ("parsing succeded !\n");
+	dprintf ("parsing succeded ! %u left !\n", bufsiz - (buf - b));
+
 #ifdef DEBUG
 	printf ("[%s]\n", name);
 	pm_parse_describe (p);
