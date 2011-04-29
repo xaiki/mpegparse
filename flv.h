@@ -135,7 +135,10 @@ int check_type (struct parseme p[], int field, char *buf, size_t buflen) {
 int update_data_size (struct parseme p[], int field, char *buf, size_t buflen) {
 	dprintf("setting %s to %u from %s.\n", p[FLV_T_DATA].name, p[field].data, p[field].name);
 
-	p[FLV_T_DATA].size = p[field].data*8;
+	p[FLV_T_DATA].size = (p[field].data)*8;
+	if (p[FLV_T_TYPE].data != FLV_T_TYPE_METADATA) {
+		p[FLV_T_DATA].size -= 8; /* used for tag */
+	}
 	return 1;
 }
 
