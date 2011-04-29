@@ -112,15 +112,15 @@ enum {
 int check_type (struct parseme p[], int field, char *buf, size_t buflen) {
 	char v = *buf;
 	switch (v) {
-	case 8:
+	case FLV_T_TYPE_AUDIO:
 		dprintf("type is audio\n");
 		_PM_EMBEDDED_EMBED (p[FLV_T_EMBEDDED], flv_ainfo);
 		break;
-	case 9:
+	case FLV_T_TYPE_VIDEO:
 		dprintf("type is video\n");
 		_PM_EMBEDDED_EMBED (p[FLV_T_EMBEDDED], flv_vinfo);
 		break;
-	case 18:
+	case FLV_T_TYPE_METADATA:
 		dprintf("type is metadata\n");
 		//		p[FLV_T_EMBEDDED].check = flv_minfo;
 		break;
